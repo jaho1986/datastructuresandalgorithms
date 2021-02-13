@@ -1,9 +1,9 @@
-package com.jaho.datastructuresandalgorithms.bst;
+package com.jaho.datastructuresandalgorithms.avl;
 
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
+public class AVLTree <T extends Comparable<T>> implements Tree<T> {
 
     private Node<T> rootNode;
 
@@ -33,8 +33,8 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
                 node.setLeftChild(new Node<T>(data, node));
             }
 
-        //This is the case when the data is greater than the value in the node:
-        //We go to the right subtree:
+            //This is the case when the data is greater than the value in the node:
+            //We go to the right subtree:
         } else {
             if(node.getRightChild() != null) {
                 insert(data,node.getRightChild());
@@ -43,6 +43,8 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
                 node.setRightChild(new Node<T>(data, node));
             }
         }
+
+        //Settle the violation:
     }
 
     @Override
@@ -85,7 +87,7 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
                 }
                 node = null;
 
-            //Case 2: when we remove items with a single child.
+                //Case 2: when we remove items with a single child.
             } else if (node.getLeftChild() == null && node.getRightChild() != null) {
 
                 Node<T> parent = node.getParentNode();
@@ -124,7 +126,7 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
                 node.getLeftChild().setParentNode(parent);
                 node = null;
 
-            //Case 3: The case when we have to remove 2 children:
+                //Case 3: The case when we have to remove 2 children:
             } else {
                 //Find the predecessor (Max item in the left subtree):
                 Node<T> predecessor = getPredecessor(node.getLeftChild());
@@ -138,6 +140,9 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
                 remove(data, predecessor);
             }
         }
+
+        //Settle the violations:
+
     }
 
     private Node<T> getPredecessor(Node<T> node) {
@@ -164,69 +169,12 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
         }
     }
 
-    @Override
-    public T getMin() {
+    private int getHeight(Node<T> node) {
         if(this.rootNode == null) {
-            return null;
-        }
-        return getMin(this.rootNode);
-    }
-
-    private T getMin(Node<T> node) {
-        if(node.getLeftChild() != null) {
-            return getMin(node.getLeftChild());
-        }
-        return node.getData();
-    }
-
-    @Override
-    public T getMax() {
-        if(this.rootNode == null) {
-            return null;
-        }
-        return getMax(this.rootNode);
-    }
-
-    @Override
-    public Node<T> getKSmallest(Node<T> node, int k) {
-        //We get the number of nodes in the left subtree
-        //+1 because we count the root node of subtree as well
-        int n = getTreeSize(rootNode.getLeftChild())+1;
-
-        if(n==k) {
-            return  node;
+            return -1;
         }
 
-        //If the number of nodes in the left subtree > k-th smalles item
-        //it means the kh smalles item is in the left subtree.
-        if (n > k) {
-            return getKSmallest(node.getLeftChild(), k);
-        }
 
-        //If the number of nodes in the left subtree is smaller than the k-th
-        //smallest item we can discard the left subtree and consider the right subtree
-        //Now we are looking for the k-th smallest item:
-
-        if (k > n) {
-            return getKSmallest(node.getRightChild(), (k-n));
-        }
-        return null;
-    }
-
-    private int getTreeSize(Node<T> node) {
-        if (node == null) {
-            return 0;
-        }
-
-        //Recursively sum up the size of the left subtree + size of right subtree
-        //Size of tree = size left subtree + size right subtree + 1 (because of the root)
-        return (getTreeSize(node.getLeftChild()) + getTreeSize(node.getRightChild()) + 1);
-    }
-
-    public T getMax(Node<T> node) {
-        if(node.getRightChild() != null) {
-            return getMax(node.getRightChild());
-        }
-        return node.getData();
+        return 0;
     }
 }

@@ -1,4 +1,6 @@
-package com.jaho.datastructuresandalgorithms.bst;
+package com.jaho.datastructuresandalgorithms.avl;
+
+import com.jaho.datastructuresandalgorithms.bst.BinarySearchTree;
 
 public class App {
 

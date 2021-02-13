@@ -1,4 +1,4 @@
-package com.jaho.datastructuresandalgorithms.bst;
+package com.jaho.datastructuresandalgorithms.avl;
 
 public class Node<T> {
 
@@ -6,6 +6,7 @@ public class Node<T> {
     private Node<T> leftChild;
     private Node<T> rightChild;
     private Node<T> parentNode;
+    private int height;
 
     public Node(T data, Node<T> parentNode) {
         this.data = data;
@@ -42,6 +43,14 @@ public class Node<T> {
 
     public void setParentNode(Node<T> parentNode) {
         this.parentNode = parentNode;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override
