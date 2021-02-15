@@ -43,7 +43,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
                 node.setRightChild(new Node<T>(data, node));
             }
         }
-
+        updateHeight(node);
         //Settle the violation:
     }
 
@@ -87,7 +87,9 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
                 }
                 node = null;
 
-                //Case 2: when we remove items with a single child.
+                updateHeight(parent);
+
+            //Case 2: when we remove items with a single child:
             } else if (node.getLeftChild() == null && node.getRightChild() != null) {
 
                 Node<T> parent = node.getParentNode();
@@ -106,6 +108,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
                 //We have to update the right child's parent:
                 node.getRightChild().setParentNode(parent);
                 node = null;
+                updateHeight(parent);
 
             } else if (node.getLeftChild() != null && node.getRightChild() == null) {
 
@@ -125,6 +128,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
                 //We have to update the right child's parent:
                 node.getLeftChild().setParentNode(parent);
                 node = null;
+                updateHeight(parent);
 
                 //Case 3: The case when we have to remove 2 children:
             } else {
@@ -161,20 +165,55 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
         if (node.getLeftChild() != null) {
             traversal(node.getLeftChild());
         }
-
         log.info(node + " - ");
-
         if (node.getRightChild() != null) {
             traversal(node.getRightChild());
         }
     }
 
+    /**
+     * Makes right rotation.
+     *
+     * @param node
+     */
+    private void makeRightRotation(Node<T> node) {
+        Node<T> tmpLeftChild = node.getLeftChild();
+        Node<T> grandChild = tmpLeftChild.getRightChild();
+
+        //Makes the rotation: the new root node will
+        tmpLeftChild.setRightChild(node);
+        node.setLeftChild(grandChild);
+    }
+
+    /**
+     * Update the height of a given node:
+     * @param node
+     */
+    public void updateHeight(Node<T> node) {
+        node.setHeight(Math.max(getHeight(node.getLeftChild()), getHeight(node.getRightChild()))+1);
+    }
+
+    /**
+     * Gets the height of a given node:
+     * @param node
+     * @return
+     */
     private int getHeight(Node<T> node) {
         if(this.rootNode == null) {
             return -1;
         }
+        return node.getHeight();
+    }
 
-
-        return 0;
+    /**
+     * Calculates the balance factor to decide the left heavy or right heavy cases:
+     * @param node
+     * @return
+     */
+    private int getBalanceFactor(Node<T> node) {
+        if (node == null) {
+            return 0;
+        }
+        return getHeight(node.getLeftChild()) - getHeight(node.getRightChild());
     }
 }
