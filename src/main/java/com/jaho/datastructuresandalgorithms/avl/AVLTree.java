@@ -183,7 +183,35 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
         //Makes the rotation: the new root node will
         tmpLeftChild.setRightChild(node);
         node.setLeftChild(grandChild);
+
+        if(grandChild != null) {
+            grandChild.setParentNode(node);
+        }
+
+        //We have to handle the parents of the node:
+        Node<T> tmpParent = node.getParentNode();
+        node.setParentNode(tmpLeftChild);
+        tmpLeftChild.setParentNode(tmpParent);
+
+        //We have to handle the parent and check if the parent node was a right child or left child:
+        if (tmpLeftChild.getParentNode() != null && tmpLeftChild.getParentNode().getLeftChild() == node) {
+            tmpLeftChild.getParentNode().setLeftChild(tmpLeftChild);
+        }
+
+        if (tmpLeftChild.getParentNode() != null && tmpLeftChild.getParentNode().getRightChild() == node) {
+            tmpLeftChild.getParentNode().setRightChild(tmpLeftChild);
+        }
+
+        if (node == this.rootNode) {
+            this.rootNode = tmpLeftChild;
+        }
+
+        //After rotations height parameters have changed:
+        updateHeight(node);
+        updateHeight(tmpLeftChild);
     }
+
+
 
     /**
      * Update the height of a given node:
