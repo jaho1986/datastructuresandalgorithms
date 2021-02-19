@@ -45,6 +45,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
         }
         updateHeight(node);
         //Settle the violation:
+        settleViolations(node);
     }
 
     @Override
@@ -146,7 +147,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
         }
 
         //Settle the violations:
-
+        settleViolations(node);
     }
 
     private Node<T> getPredecessor(Node<T> node) {
@@ -157,17 +158,55 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
     }
 
     @Override
-    public void traversal() {
-        traversal(this.rootNode);
+    public void traverse() {
+        traverse(this.rootNode);
     }
 
-    private void traversal(Node<T> node) {
+    private void traverse(Node<T> node) {
         if (node.getLeftChild() != null) {
-            traversal(node.getLeftChild());
+            traverse(node.getLeftChild());
         }
         log.info(node + " - ");
         if (node.getRightChild() != null) {
-            traversal(node.getRightChild());
+            traverse(node.getRightChild());
+        }
+    }
+
+    /**
+     * Checks up to the root node if any of the AVL properties are violated or not.
+     * @param node
+     */
+    private void settleViolations(Node<T> node) {
+        while (node != null){
+            updateHeight(node);
+            settleViolationsHelper(node);
+            node = node.getParentNode();
+        }
+    }
+
+    private void settleViolationsHelper(Node<T> node) {
+        int balance = getBalanceFactor(node);
+
+        log.info("Checking if there is a violation on node: " + node.getData() + ". Balance factor: " + balance);
+
+        //There is a left-heavy situation:
+        if (balance > 1) {
+            //This is a left-right heavy situation: Left Rotation.
+            if(getBalanceFactor(node.getLeftChild()) < 0) {
+                makeLeftRotation(node.getLeftChild());
+            }
+            //If there is a left-left heavy situation just a single right rotation is needed.
+            makeRightRotation(node);
+        }
+
+        //There is a right-heavy situation:
+        if (balance < -1) {
+            //This is a right-left heavy situation: Right Rotation.
+            if(getBalanceFactor(node.getRightChild()) > 0) {
+                makeRightRotation(node.getRightChild());
+            }
+            //If there is a right-right heavy situation just a single right rotation is needed.
+            makeLeftRotation(node);
         }
     }
 
@@ -177,6 +216,8 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
      * @param node
      */
     private void makeRightRotation(Node<T> node) {
+
+        log.info("Making right rotation on node: " + node.getData());
         Node<T> tmpLeftChild = node.getLeftChild();
         Node<T> grandChild = tmpLeftChild.getRightChild();
 
@@ -211,6 +252,48 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
         updateHeight(tmpLeftChild);
     }
 
+    /**
+     * Makes left rotation.
+     *
+     * @param node
+     */
+    private void makeLeftRotation(Node<T> node) {
+        log.info("Making left rotation on node: " + node.getData());
+
+        Node<T> tmpRightChild = node.getRightChild();
+        Node<T> grandChild = tmpRightChild.getLeftChild();
+
+        //Makes the rotation: the new root node will
+        tmpRightChild.setLeftChild(node);
+        node.setRightChild(grandChild);
+
+        if(grandChild != null) {
+            grandChild.setParentNode(node);
+        }
+
+        //We have to handle the parents of the node:
+        Node<T> tmpParent = node.getParentNode();
+        node.setParentNode(tmpRightChild);
+        tmpRightChild.setParentNode(tmpParent);
+
+        //We have to handle the parent and check if the parent node was a right child or left child:
+        if (tmpRightChild.getParentNode() != null && tmpRightChild.getParentNode().getRightChild() == node) {
+            tmpRightChild.getParentNode().setRightChild(tmpRightChild);
+        }
+
+        if (tmpRightChild.getParentNode() != null && tmpRightChild.getParentNode().getLeftChild() == node) {
+            tmpRightChild.getParentNode().setLeftChild(tmpRightChild);
+        }
+
+        if (node == this.rootNode) {
+            this.rootNode = tmpRightChild;
+        }
+
+        //After rotations height parameters have changed:
+        updateHeight(node);
+        updateHeight(tmpRightChild);
+    }
+
 
 
     /**
@@ -227,7 +310,7 @@ public class AVLTree <T extends Comparable<T>> implements Tree<T> {
      * @return
      */
     private int getHeight(Node<T> node) {
-        if(this.rootNode == null) {
+        if(node == null) {
             return -1;
         }
         return node.getHeight();
