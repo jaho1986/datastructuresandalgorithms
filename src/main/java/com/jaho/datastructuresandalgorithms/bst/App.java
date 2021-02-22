@@ -10,6 +10,6 @@ public class App {
         bst.insert(93);
         bst.insert(45);
 
-        bst.traversal();
+        bst.traverse();
     }
 }

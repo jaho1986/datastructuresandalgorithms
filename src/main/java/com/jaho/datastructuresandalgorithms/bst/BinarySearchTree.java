@@ -148,19 +148,19 @@ public class BinarySearchTree <T extends Comparable<T>> implements Tree<T> {
     }
 
     @Override
-    public void traversal() {
-        traversal(this.rootNode);
+    public void traverse() {
+        traverse(this.rootNode);
     }
 
-    private void traversal(Node<T> node) {
+    private void traverse(Node<T> node) {
         if (node.getLeftChild() != null) {
-            traversal(node.getLeftChild());
+            traverse(node.getLeftChild());
         }
 
         log.info(node + " - ");
 
         if (node.getRightChild() != null) {
-            traversal(node.getRightChild());
+            traverse(node.getRightChild());
         }
     }
 

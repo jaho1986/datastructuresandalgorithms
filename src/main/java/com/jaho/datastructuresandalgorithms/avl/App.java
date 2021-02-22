@@ -7,7 +7,6 @@ public class App {
         avl.insert(3);
         avl.insert(5);
         avl.insert(4);
-
         avl.traverse();
     }
 }

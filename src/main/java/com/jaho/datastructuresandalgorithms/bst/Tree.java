@@ -5,7 +5,7 @@ public interface Tree<T> {
     Node<T> getRoot();
     void insert (T data);
     void remove (T data);
-    void traversal();
+    void traverse();
     T getMin();
     T getMax();
     Node<T> getKSmallest(Node<T> node, int k);
