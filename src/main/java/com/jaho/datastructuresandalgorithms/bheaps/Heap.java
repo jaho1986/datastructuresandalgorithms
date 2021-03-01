@@ -11,7 +11,7 @@ public class Heap {
         this.heap = new int[Constants.CAPACITY];
     }
 
-    public void inser(int data) {
+    public void insert(int data) {
         if (isFull()) {
             throw new RuntimeException("The heap is full...");
         }
@@ -36,6 +36,61 @@ public class Heap {
             fixUp(parentIndex);
         }
 
+    }
+
+    public int getMax() {
+        return this.heap[0];
+    }
+
+    public void heapSort() {
+        int n = this.heapSize;
+        int max = 0;
+        for (int i=0; i<n; i++) {
+            max = poll();
+            System.out.println(max);
+        }
+    }
+
+    public int poll() {
+        int max = this.getMax();
+
+        //We have to swap the root node with the max item:
+        swap(0, this.heapSize-1);
+        this.heapSize--;
+
+        //Fix the properties if needed:
+        fixDown(0);
+        return max;
+    }
+
+    /**
+     * O(logN)
+     * @param index
+     */
+    private void fixDown(int index) {
+        int leftChildIndex = 2*index + 1;
+        int rightChildIndex = 2*index + 2;
+        int theLargestIndex = index;
+
+        //Compare the left child with the parent:
+        if (leftChildIndex < heapSize && heap[leftChildIndex] > this.heap[index]) {
+            theLargestIndex = leftChildIndex;
+        }
+
+        //Compare the right child with the parent:
+        if (rightChildIndex < heapSize && heap[rightChildIndex] > this.heap[index]) {
+            theLargestIndex = rightChildIndex;
+        }
+
+        //If one of the children is larger than the parent we have to swap the items:
+        if(index != theLargestIndex) {
+            swap(index, theLargestIndex);
+            fixUp(theLargestIndex);
+        }
+    }
+
+    public boolean isEmpty() {
+        return heapSize==0;
     }
 
     private void swap(int index1, int index2) {
